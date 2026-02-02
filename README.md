@@ -7,14 +7,18 @@
 
 **SignBridge** is a powerful, real-time Indian Sign Language (ISL) translator that runs entirely in your browser. By leveraging advanced computer vision and machine learning (ONNX Runtime + MediaPipe), it bridges the communication gap between the Deaf community and the rest of the world—without needing server-side processing.
 
+---
+
 ## 🚀 Key Features
 
 - **👉 Real-Time ISL Translation**: Instantly converts ISL gestures into text using a lightweight, locally optimized ONNX model.
-- **🗣️ Text-to-Speech**: Type your message and have it spoken aloud.
+- **🗣️ Text-to-Speech**: Type your message and have it spoken aloud for seamless two-way communication.
 - **🌐 Multilingual Support**: Accessible detailed UI in **English, Hindi (हिंदी), Marathi (मराठी), and Gujarati (ગુજરાતી)**.
 - **🔒 Privacy First**: All inference happens on your device. No video data is ever sent to a server.
 - **⚡ High Performance**: Powered by **WebAssembly (WASM)** and SIMD instructions for smooth performance on standard devices.
 - **🤖 AI Assistant**: Integrated chatbot powered by DeepSeek-V3 for getting help with the platform.
+
+---
 
 ## 🛠️ Tech Stack
 
@@ -25,9 +29,22 @@
   - **ONNX Runtime Web**: For running the custom ISL classification model.
 - **Icons**: Lucide React
 
+---
+
 ## 📦 Installation & Setup
 
-1. **Clone the repository**
-   ```bash
-   git clone [https://github.com/your-username/SignBridge.git](https://github.com/your-username/SignBridge.git)
-   cd SignBridge
+Follow these steps to set up the project locally:
+
+```bash
+# 1. Clone the repository
+git clone [https://github.com/your-username/SignBridge.git](https://github.com/your-username/SignBridge.git)
+cd SignBridge
+
+# 2. Install dependencies
+npm install
+
+# 3. Start the development server
+npm run dev
+
+# 4. Build for production (optional)
+npm run build
