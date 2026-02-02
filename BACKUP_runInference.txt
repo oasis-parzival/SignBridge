@@ -1,0 +1,122 @@
+// BACKUP - Simple working runInference function
+// This is a clean, working version to replace the broken one
+
+const runInference = async (inputData: Float32Array): Promise<{ prediction: string; confidence: number }> => {
+    if (!sessionRef.current) {
+        console.error('❌ Model not loaded');
+        return { prediction: "Model not loaded", confidence: 0 };
+    }
+
+    try {
+        const startTime = performance.now();
+        
+        // Debug: Log that inference is starting (throttled)
+        if (logThrottleRef.current % 30 === 0) {
+            console.log('🚀 Starting inference with input length:', inputData.length);
+        }
+
+        // Verify input data type
+        if (!(inputData instanceof Float32Array)) {
+            console.error('❌ Input data is not Float32Array:', typeof inputData);
+            return { prediction: "Invalid input type", confidence: 0 };
+        }
+
+        // Create tensor with shape [1, 42]
+        const tensor = new ort.Tensor('float32', inputData, [1, 42]);
+        
+        // Use dynamic input name from model signature
+        const inputName = sessionRef.current.inputNames[0];
+        
+        // Throttled logging (only every 30 frames)
+        const shouldLog = logThrottleRef.current % 30 === 0;
+        if (shouldLog) {
+            console.log('🎯 Created tensor:', tensor.dims, '| Type:', tensor.type);
+            console.log('📥 Using input name:', inputName);
+        }
+        
+        // Run inference
+        const feeds = { [inputName]: tensor };
+        const results = await sessionRef.current.run(feeds);
+
+        // Get ALL output names and log them
+        const allOutputNames = sessionRef.current.outputNames;
+        if (shouldLog) {
+            console.log('📋 All output names:', allOutputNames);
+            console.log('📋 Available results:', Object.keys(results));
+        }
+
+        // Try each output until we find one that works
+        for (const outputName of allOutputNames) {
+            try {
+                const outputTensor = results[outputName];
+                
+                if (shouldLog) {
+                    console.log(`📦 Trying output "${outputName}": type=${outputTensor.type}, dims=${outputTensor.dims}`);
+                }
+
+                // Handle int64 output (direct class labels)
+                if (outputTensor.type === 'int64') {
+                    const int64Data = outputTensor.data as BigInt64Array;
+                    const classIndex = Number(int64Data[0]);
+                    const prediction = ISL_CLASSES[classIndex] || `Class ${classIndex}`;
+                    
+                    console.log('✅ Got class label directly:', prediction, '(index:', classIndex, ')');
+                    return { prediction, confidence: 1.0 };
+                }
+                
+                // Handle float32 output (probabilities)
+                if (outputTensor.type === 'float32') {
+                    const outputData = outputTensor.data as Float32Array;
+                    
+                    if (shouldLog) {
+                        console.log('📤 Got probabilities, length:', outputData.length);
+                        console.log('📤 First 5 values:', Array.from(outputData.slice(0, 5)));
+                    }
+
+                    // Find max probability
+                    let maxProb = -Infinity;
+                    let maxIndex = 0;
+                    for (let i = 0; i < outputData.length; i++) {
+                        if (outputData[i] > maxProb) {
+                            maxProb = outputData[i];
+                            maxIndex = i;
+                        }
+                    }
+
+                    // Apply softmax
+                    const expSum = Array.from(outputData).reduce((sum: number, val) => sum + Math.exp(val), 0);
+                    const confidenceScore = Math.exp(maxProb) / expSum;
+
+                    const endTime = performance.now();
+                    setLatency(Math.round(endTime - startTime));
+
+                    const prediction = ISL_CLASSES[maxIndex] || `Class ${maxIndex}`;
+                    
+                    if (shouldLog) {
+                        console.log('✅ Prediction:', prediction, '| Confidence:', (confidenceScore * 100).toFixed(1) + '%');
+                    }
+
+                    return { prediction, confidence: confidenceScore };
+                }
+                
+            } catch (outputError) {
+                console.log(`  ⚠️ Failed to access output "${outputName}":`, outputError);
+                continue; // Try next output
+            }
+        }
+
+        // If we get here, no output worked
+        console.error('❌ Could not access any model output');
+        return { prediction: "No accessible output", confidence: 0 };
+
+    } catch (error) {
+        console.error('❌ ========== INFERENCE ERROR ==========');
+        console.error('Error:', error);
+        if (error instanceof Error) {
+            console.error('Message:', error.message);
+            console.error('Stack:', error.stack);
+        }
+        console.error('======================================');
+        return { prediction: "Error", confidence: 0 };
+    }
+};
