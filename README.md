@@ -19,6 +19,7 @@
 - **🤖 AI Assistant**: Integrated chatbot powered by DeepSeek-V3 for getting help with the platform.
 
 ---
+
 ## 🛠️ Tech Stack
 
 - **Frontend**: React + Vite (Fast & lightweight)
@@ -27,8 +28,6 @@
   - **MediaPipe Hands**: For skeletal hand tracking.
   - **ONNX Runtime Web**: For running the custom ISL classification model.
 - **Icons**: Lucide React
-
----
 
 ---
 
@@ -63,3 +62,14 @@ The model is currently optimized to recognize the following categories of Indian
 
 ---
 
+---
+
+<div align="center">
+
+### Made with 💖 by **Atharva**
+
+![Glow](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
+
+*Bridging communication gaps, one sign at a time.*
+
+</div>
