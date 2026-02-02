@@ -19,7 +19,6 @@
 - **🤖 AI Assistant**: Integrated chatbot powered by DeepSeek-V3 for getting help with the platform.
 
 ---
-
 ## 🛠️ Tech Stack
 
 - **Frontend**: React + Vite (Fast & lightweight)
