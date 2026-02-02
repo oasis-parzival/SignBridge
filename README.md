@@ -31,20 +31,36 @@
 
 ---
 
-## 📦 Installation & Setup
+---
 
-Follow these steps to set up the project locally:
+## 🧠 How It Works
 
-```bash
-# 1. Clone the repository
-git clone [https://github.com/your-username/SignBridge.git](https://github.com/your-username/SignBridge.git)
-cd SignBridge
+The translation pipeline operates in four distinct stages to ensure high-speed, client-side performance:
 
-# 2. Install dependencies
-npm install
+1.  **Detection**: MediaPipe identifies and tracks **21 skeletal landmarks** on each hand within the video stream.
+2.  **Preprocessing**: Landmark coordinates are **normalized** relative to the wrist. This mathematical adjustment ensures the model remains accurate regardless of the user's distance from the camera or their hand's position on the screen.
+3.  **Inference**: The processed tensor is fed into a **quantized Random Forest model** (via ONNX Runtime), which classifies the input into one of **42 unique ISL signs**.
+4.  **Result**: The predicted sign is rendered instantly on the UI, accompanied by a real-time **confidence score**.
 
-# 3. Start the development server
-npm run dev
+---
 
-# 4. Build for production (optional)
-npm run build
+## 📝 Supported Signs (42 Total)
+
+The model is currently optimized to recognize the following categories of Indian Sign Language:
+
+| Category | Supported Signs |
+| :--- | :--- |
+| **Alphabets** | A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z |
+| **Numbers** | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 |
+| **Common Phrases** | Hello, Thank You, Please, Sorry, Yes, No |
+
+---
+
+## 🔧 Troubleshooting
+
+* **Camera Not Loading**: Ensure no other application (e.g., Zoom, Teams, or Discord) is currently accessing the webcam. Refresh the page after closing competing apps.
+* **Low FPS / Performance Lag**: SignBridge utilizes **WASM** for heavy computation. For the best experience, use a Chromium-based browser (Chrome, Edge, or Brave) and verify that **"Hardware Acceleration"** is enabled in your browser settings.
+* **Model Accuracy**: For optimal translation, ensure your environment is well-lit and both hands are fully visible within the camera frame without significant motion blur.
+
+---
+
