@@ -62,8 +62,6 @@ The model is currently optimized to recognize the following categories of Indian
 
 ---
 
----
-
 <div align="center">
 
 ### Made with 💖 by **Atharva**
